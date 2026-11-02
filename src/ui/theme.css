@@ -1,0 +1,599 @@
+/*
+ * Apex Drive visual identity, loaded after styles.css and menu.css.
+ *
+ * Motorsport broadcast graphics rather than app chrome: solid ink panels with hard edges, one
+ * signal-orange accent, condensed DIN-style lettering (Bahnschrift on Windows, DIN Alternate on
+ * macOS, Roboto Condensed on Android; Arial Narrow as the last resort), numbered menus, slanted
+ * active markers and timing-tower tables. No blur, no rounded cards, no drop shadows.
+ */
+
+:root {
+  --ink: #0b0c0e;
+  --ink-2: #15171b;
+  --panel: rgba(11, 12, 14, 0.9);
+  --line: rgba(243, 241, 236, 0.14);
+  --text: #f3f1ec;
+  --muted: #8d9098;
+  --accent: #ff5420;
+  --accent-ink: #160700;
+  --good: #35d07f;
+  --bad: #ff4436;
+  --font: 'Bahnschrift', 'DIN Alternate', 'DIN Next', 'Roboto Condensed', 'Arial Narrow', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font);
+  font-stretch: semi-condensed;
+}
+
+body,
+button,
+input {
+  font-family: var(--font);
+}
+
+/* ------------------------------------------------------------------ loading */
+#loading {
+  background: var(--ink);
+}
+
+#loading .logo,
+.menu-logo {
+  font-family: var(--font);
+  font-weight: 700;
+  font-style: normal;
+  font-stretch: condensed;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 0.86;
+}
+
+#loading .logo::after {
+  content: '';
+  display: block;
+  height: 4px;
+  width: 64px;
+  margin-top: 12px;
+  background: var(--accent);
+}
+
+/* ------------------------------------------------------------------ menu base */
+#menu.overlay {
+  background: rgba(8, 9, 11, 0.72);
+  backdrop-filter: none;
+}
+
+#menu.replay-bg {
+  background: linear-gradient(90deg, rgba(8, 9, 11, 0.85) 0, rgba(8, 9, 11, 0.6) 520px, rgba(8, 9, 11, 0) 760px);
+}
+
+.menu {
+  padding: 28px 32px;
+  gap: 18px;
+}
+
+.menu button {
+  border-radius: 0;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: rgba(243, 241, 236, 0.045);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.menu button:hover:not([disabled]),
+.menu button:focus {
+  background: rgba(243, 241, 236, 0.1);
+  border-left-color: var(--accent);
+}
+
+.menu button.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-left-color: var(--accent);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  padding-right: 24px;
+}
+
+.menu button.primary:focus,
+.menu button.primary:hover:not([disabled]) {
+  background: #ff6d3d;
+  color: var(--accent-ink);
+}
+
+.menu button.danger {
+  border-left-color: var(--bad);
+  color: #ff8a7e;
+}
+
+.menu h1 {
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: condensed;
+  font-size: 34px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.menu h3 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+
+/* a short rule after each section label */
+.menu h3::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.menu-credits {
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+
+/* ------------------------------------------------------------------ main menu */
+.menu-side {
+  width: min(380px, 100%);
+  padding: 34px 32px;
+  margin: -28px -32px;
+  height: calc(100% + 56px);
+  gap: 22px;
+  background: linear-gradient(90deg, rgba(11, 12, 14, 0.96) 0, rgba(11, 12, 14, 0.88) 78%, rgba(11, 12, 14, 0) 100%);
+  border-right: 0;
+}
+
+.menu-logo {
+  font-size: 58px;
+}
+
+.menu-logo span {
+  display: block;
+}
+
+.menu-logo span + span {
+  color: var(--accent);
+}
+
+.menu-credits.big {
+  font-size: 18px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.menu-list {
+  counter-reset: item;
+  gap: 2px;
+}
+
+.menu-list button {
+  counter-increment: item;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font-size: 21px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 11px 14px;
+  background: transparent;
+}
+
+.menu-list button::before {
+  content: counter(item, decimal-leading-zero);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  width: 18px;
+}
+
+.menu-list button:focus,
+.menu-list button:hover {
+  transform: none;
+  background: linear-gradient(90deg, rgba(255, 84, 32, 0.22), rgba(255, 84, 32, 0));
+}
+
+.menu-list button:focus::before,
+.menu-list button:hover::before {
+  color: var(--accent);
+}
+
+.menu-car-line {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.menu-car-line b {
+  font-size: 22px;
+  letter-spacing: 0.02em;
+}
+
+/* ------------------------------------------------------------------ sub screens */
+.menu-head {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+.menu-head .menu-back {
+  border-left: 0;
+  background: var(--ink-2);
+  font-size: 20px;
+  padding: 8px 14px;
+}
+
+.menu-head .menu-back:hover,
+.menu-head .menu-back:focus {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.menu-panel {
+  background: var(--panel);
+  backdrop-filter: none;
+  border-radius: 0;
+  border-top: 3px solid var(--accent);
+  padding: 14px 18px 18px;
+  gap: 4px;
+}
+
+.menu .car-item.sel,
+.menu .map-item.sel {
+  background: rgba(255, 84, 32, 0.14);
+  border-left-color: var(--accent);
+}
+
+.car-item.cur em {
+  color: var(--good);
+}
+
+.map-item i,
+.champ-item i {
+  color: var(--accent);
+}
+
+.car-tags span {
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 10px;
+  padding: 2px 6px;
+}
+
+.stat .bar {
+  height: 4px;
+  border-radius: 0;
+  background: rgba(243, 241, 236, 0.1);
+}
+
+.stat .bar i {
+  background: var(--accent);
+}
+
+.stat span {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.menu button.swatch {
+  border-radius: 0;
+  width: 34px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.menu button.swatch.on {
+  box-shadow: 0 0 0 2px var(--ink), 0 0 0 4px var(--accent);
+}
+
+.pips i {
+  border-radius: 0;
+  width: 16px;
+  height: 5px;
+  transform: skewX(-20deg);
+}
+
+.events li,
+.standings li {
+  border-radius: 0;
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+  padding: 7px 4px;
+}
+
+.events li.next,
+.standings li.me {
+  background: rgba(255, 84, 32, 0.14);
+  border-left: 3px solid var(--accent);
+}
+
+.menu button.opt b {
+  font-weight: 700;
+}
+
+.menu button.opt b i {
+  color: var(--muted);
+}
+
+.menu button.opt:focus b i,
+.menu button.opt:hover b i {
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ pause / results */
+.menu-center {
+  background: var(--panel);
+  backdrop-filter: none;
+  border-radius: 0;
+  border-top: 3px solid var(--accent);
+  text-align: left;
+  padding: 24px 28px;
+}
+
+.menu-center .menu-list button {
+  text-align: left;
+}
+
+table.results {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+table.results th {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+table.results td {
+  border-bottom: 1px solid rgba(243, 241, 236, 0.06);
+}
+
+table.results tr.me td {
+  background: rgba(255, 84, 32, 0.16);
+}
+
+table.results tr.me td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.earned {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.menu-toast {
+  border-radius: 0 !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ------------------------------------------------------------------ HUD */
+.hud-panel {
+  background: var(--panel);
+  backdrop-filter: none;
+  border-radius: 0;
+}
+
+/* timing tower: position block, lap, then times */
+.hud-race {
+  padding: 0;
+  min-width: 228px;
+  border-left: 0;
+}
+
+.hud-race-top {
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.hud-lap,
+.hud-pos {
+  padding: 8px 14px 9px;
+  font-size: 32px;
+  font-weight: 700;
+  font-stretch: condensed;
+}
+
+.hud-pos {
+  background: var(--accent);
+  color: var(--accent-ink);
+  order: -1;
+  min-width: 78px;
+}
+
+.hud-pos label,
+.hud-pos small {
+  color: rgba(22, 7, 0, 0.62) !important;
+}
+
+.hud-race label {
+  letter-spacing: 0.2em;
+  font-weight: 700;
+}
+
+.hud-time {
+  padding: 0 14px;
+  margin: 10px 0 6px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hud-sectors {
+  padding: 0 14px;
+  gap: 3px;
+}
+
+.hud-sectors span {
+  border-radius: 0 !important;
+  transform: skewX(-14deg);
+}
+
+.hud-times {
+  padding: 4px 14px 12px;
+}
+
+.hud-delta {
+  border-radius: 0 !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hud-delta.good {
+  background: var(--good) !important;
+  color: #04170c !important;
+}
+
+.hud-delta.bad {
+  background: var(--bad) !important;
+  color: #1a0300 !important;
+}
+
+.hud-banner {
+  border-radius: 0 !important;
+  background: var(--panel) !important;
+  border-left: 4px solid var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hud-wrongway {
+  border-radius: 0 !important;
+  letter-spacing: 0.2em;
+}
+
+.hud-countdown .lights span {
+  border-radius: 2px !important;
+}
+
+.hud-minimap {
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.hud-assists span {
+  border-radius: 0;
+  background: var(--panel);
+  letter-spacing: 0.1em;
+}
+
+.hud-assists span.on {
+  background: var(--text);
+  color: var(--ink);
+}
+
+.hud-gauge {
+  background: radial-gradient(circle, rgba(11, 12, 14, 0.9) 0, rgba(11, 12, 14, 0.9) 69%, transparent 70%);
+}
+
+.hud-speed {
+  font-weight: 700;
+  font-stretch: condensed;
+  font-size: 60px;
+  letter-spacing: -0.01em;
+}
+
+.hud-unit,
+.hud-mode {
+  letter-spacing: 0.24em;
+  font-weight: 700;
+}
+
+.hud-gear {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.hud-info {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+}
+
+.hud-help {
+  border-left: 3px solid var(--accent);
+}
+
+.hud-help kbd {
+  border-radius: 0 !important;
+}
+
+.hud-toast {
+  border-radius: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hud-drift {
+  border-top: 3px solid var(--accent);
+}
+
+/* ------------------------------------------------------------------ replay, photo, touch */
+#replay-bar {
+  border-radius: 0;
+  background: var(--panel);
+  backdrop-filter: none;
+  border-top: 3px solid var(--accent);
+}
+
+#replay-bar button {
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+}
+
+.replay-badge {
+  border-radius: 0;
+  background: var(--panel);
+  border-left: 3px solid #ff2b1f;
+}
+
+#touch button {
+  border-radius: 0;
+}
+
+#touch .t-btn {
+  border-radius: 50%;
+}
+
+/* thin scrollbars in the accent colour instead of the platform default */
+.menu * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(243, 241, 236, 0.3) transparent;
+}
+
+.menu ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu ::-webkit-scrollbar-thumb {
+  background: rgba(243, 241, 236, 0.3);
+}

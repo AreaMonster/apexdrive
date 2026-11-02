@@ -1,0 +1,911 @@
+:root {
+  --panel: rgba(12, 15, 20, 0.62);
+  --text: #f2f4f7;
+  --muted: #9aa4b2;
+  --accent: #ffb020;
+  --red: #ff4d3d;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0d1117;
+  color: var(--text);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+}
+
+#app canvas {
+  display: block;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* loading / error screen */
+#loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: radial-gradient(circle at 50% 40%, #1b2330, #0d1117 70%);
+  z-index: 10;
+  padding: 24px;
+  text-align: center;
+}
+
+#loading .logo {
+  font-size: clamp(32px, 7vw, 64px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  font-style: italic;
+}
+
+#loading .sub {
+  color: var(--muted);
+}
+
+#loading.error h2 {
+  color: var(--red);
+  margin: 8px 0 0;
+}
+
+#loading.error p {
+  max-width: 520px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* HUD */
+.hud-panel {
+  position: absolute;
+  background: var(--panel);
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.hud-info {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hud-info b {
+  color: var(--text);
+}
+
+/* race panel */
+.hud-race {
+  top: 16px;
+  left: 16px;
+  min-width: 210px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-race label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.hud-race-top {
+  display: flex;
+  gap: 22px;
+}
+
+.hud-lap,
+.hud-pos {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.hud-race small {
+  font-size: 15px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.hud-time {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 8px 0 4px;
+}
+
+.hud-sectors {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.hud-sectors span {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 0;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+
+.hud-sectors span.cur {
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.hud-sectors span.done {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--text);
+}
+
+.hud-sectors span.good {
+  background: #1f9d55;
+  color: #fff;
+}
+
+.hud-sectors span.bad {
+  background: #c9a227;
+  color: #111;
+}
+
+.hud-times div {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+}
+
+.hud-times label {
+  width: 38px;
+}
+
+.hud-times em {
+  color: var(--red);
+  font-style: normal;
+  font-size: 11px;
+}
+
+.hud-times .warn {
+  color: var(--red);
+  font-size: 11px;
+}
+
+.hud-delta {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 14px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  display: none;
+}
+
+.hud-delta.show {
+  display: block;
+}
+
+.hud-delta.good {
+  background: rgba(31, 157, 85, 0.85);
+}
+
+.hud-delta.bad {
+  background: rgba(201, 60, 45, 0.85);
+}
+
+.hud-banner {
+  position: absolute;
+  top: 22%;
+  left: 50%;
+  transform: translate(-50%, -6px);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 10px 26px;
+  border-radius: 10px;
+  background: var(--panel);
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-banner.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.hud-banner small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.hud-banner.good b {
+  color: #3ddc84;
+}
+
+.hud-banner.bad b {
+  color: #ffcc4d;
+}
+
+.hud-banner.best {
+  background: rgba(120, 40, 170, 0.85);
+}
+
+.hud-wrongway {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 38px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: rgba(200, 30, 30, 0.85);
+  padding: 6px 26px;
+  border-radius: 8px;
+  display: none;
+  animation: blink 0.8s steps(2) infinite;
+}
+
+.hud-wrongway.show {
+  display: block;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.hud-countdown {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-countdown.show {
+  display: flex;
+}
+
+.hud-countdown .lights {
+  display: flex;
+  gap: 12px;
+  background: #111;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+.hud-countdown .lights span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #3a0d0d;
+}
+
+.hud-countdown .lights span.on {
+  background: #ff2a1f;
+  box-shadow: 0 0 18px #ff2a1f;
+}
+
+.hud-countdown.go .lights span {
+  background: #23e05a;
+  box-shadow: 0 0 18px #23e05a;
+}
+
+.hud-countdown .go {
+  font-size: 64px;
+  font-weight: 900;
+  font-style: italic;
+  color: #23e05a;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+.hud-minimap {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.hud-damage {
+  position: absolute;
+  right: 254px;
+  bottom: 20px;
+  width: 40px;
+  height: 68px;
+}
+
+.hud-assists {
+  position: absolute;
+  bottom: 248px;
+  right: 16px;
+  width: 230px;
+  justify-content: center;
+  display: flex;
+  gap: 6px;
+}
+
+.hud-assists span {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.hud-assists span.on {
+  color: #111;
+  background: var(--accent);
+}
+
+.hud-gauge {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(10, 12, 16, 0.72) 58%, rgba(10, 12, 16, 0.35) 70%, transparent 72%);
+}
+
+.hud-gauge canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.hud-speed {
+  position: absolute;
+  top: 70px;
+  width: 100%;
+  text-align: center;
+  font-size: 54px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.hud-unit {
+  position: absolute;
+  top: 128px;
+  width: 100%;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.hud-gear {
+  position: absolute;
+  top: 150px;
+  width: 100%;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.hud-gear.shifting {
+  opacity: 0.4;
+}
+
+.hud-mode {
+  position: absolute;
+  bottom: 18px;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.hud-help {
+  left: 16px;
+  bottom: 16px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.hud-help h3 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hud-help div {
+  display: flex;
+  gap: 10px;
+}
+
+.hud-help kbd {
+  min-width: 92px;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.hud-debug {
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  min-width: 300px;
+}
+
+.hud-debug table {
+  border-collapse: collapse;
+  margin: 4px 0;
+  width: 100%;
+}
+
+.hud-debug td,
+.hud-debug th {
+  padding: 0 6px 0 0;
+  text-align: left;
+  font-weight: 400;
+}
+
+.hud-debug th {
+  color: var(--muted);
+}
+
+.hud-measure b {
+  color: var(--accent);
+}
+
+.hud-toast {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  background: var(--panel);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.hud-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+
+
+
+
+
+@media (max-width: 760px) {
+  .hud-minimap {
+    width: 130px;
+    height: 130px;
+  }
+  .hud-race {
+    min-width: 0;
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+  .hud-info {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .hud-help {
+    display: none !important;
+  }
+  .hud-gauge {
+    transform: scale(0.75);
+    transform-origin: bottom right;
+  }
+  .hud-assists {
+    bottom: 186px;
+    width: 172px;
+  }
+  .hud-damage {
+    right: 192px;
+  }
+}
+
+/* ------------------------------------------------------------ touch controls (ui/TouchControls.js) */
+#touch {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#touch > *,
+#touch .t-top > * {
+  pointer-events: auto;
+}
+
+#touch button {
+  font: inherit;
+  color: var(--text);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 14, 20, 0.38);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+#touch button.on {
+  background: rgba(255, 196, 0, 0.45);
+  border-color: var(--accent);
+}
+
+.t-steer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46%;
+  height: 62%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 0 0 28px 28px;
+}
+
+.t-steer-track {
+  position: relative;
+  width: min(150px, 38vw);
+  height: 46px;
+  border-radius: 23px;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 14, 20, 0.3);
+}
+
+.t-steer-track i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.t-steer.on .t-steer-track i {
+  background: var(--accent);
+}
+
+.t-steer span {
+  margin: 6px 0 0 50px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.t-pedal {
+  position: absolute;
+  bottom: 22px;
+  width: 92px;
+  height: 128px;
+  border-radius: 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.t-gas {
+  right: 18px;
+  height: 150px;
+}
+
+.t-brake {
+  right: 122px;
+}
+
+.t-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.t-hand {
+  position: absolute;
+  right: 140px;
+  bottom: 166px;
+  font-size: 13px;
+}
+
+/* under the minimap, out of the way of the race / drift panels */
+.t-top {
+  position: absolute;
+  top: 146px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.t-top .t-btn {
+  width: 46px;
+  height: 46px;
+  font-size: 16px;
+}
+
+/* HUD rearranged around the touch controls */
+body.touch .hud-help,
+body.touch .hud-assists,
+body.touch .hud-damage,
+body.touch .hud-info {
+  display: none !important;
+}
+
+body.touch .hud-gauge {
+  right: auto;
+  left: 8px;
+  bottom: 100px;
+  transform: scale(0.5);
+  transform-origin: bottom left;
+}
+
+body.touch .hud-minimap {
+  width: 120px;
+  height: 120px;
+}
+
+body.touch .hud-race {
+  transform: scale(0.8);
+  transform-origin: top left;
+}
+
+/* ------------------------------------------------------------ replay viewer bar */
+#replay-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(10, 14, 20, 0.72);
+  backdrop-filter: blur(6px);
+  width: min(760px, calc(100vw - 32px));
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+#replay-bar.show {
+  display: flex;
+}
+
+#replay-bar button {
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#replay-bar button:hover,
+#replay-bar button:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+#replay-bar input[type='range'] {
+  flex: 1;
+  min-width: 60px;
+  accent-color: var(--accent);
+}
+
+#replay-bar .rp-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  min-width: 92px;
+  text-align: center;
+}
+
+.replay-badge {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  display: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(10, 14, 20, 0.6);
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  font-size: 12px;
+}
+
+.replay-badge.show {
+  display: block;
+}
+
+.replay-badge span {
+  color: #ff4a4a;
+  margin-right: 6px;
+}
+
+.replay-badge em {
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+@media (max-width: 560px) {
+  #replay-bar {
+    flex-wrap: wrap;
+  }
+  #replay-bar input[type='range'] {
+    order: -1;
+    flex-basis: 100%;
+  }
+}
+
+/* small phones (portrait): narrower pedals and steering pad, drift panel clear of the minimap */
+@media (max-width: 440px) {
+  .t-steer {
+    padding-left: 14px;
+  }
+  .t-steer-track {
+    width: 120px;
+  }
+  .t-steer span {
+    margin-left: 34px;
+  }
+  .t-pedal {
+    width: 76px;
+  }
+  .t-gas {
+    right: 12px;
+  }
+  .t-brake {
+    right: 98px;
+  }
+  .t-hand {
+    right: 108px;
+  }
+  #hud .hud-drift {
+    left: 12px;
+    transform: scale(0.85);
+    transform-origin: top left;
+    min-width: 0;
+  }
+}
+
+/* ------------------------------------------------------------ photo mode (ui/PhotoMode.js) */
+#photo {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 7;
+  display: none;
+}
+
+#photo.show {
+  display: block;
+}
+
+#photo.bare .ph-panel {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ph-panel {
+  width: 250px;
+  padding: 14px 16px;
+  background: rgba(12, 14, 18, 0.82);
+  border-left: 3px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+  transition: opacity 0.2s;
+}
+
+.ph-title {
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ph-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--muted);
+}
+
+.ph-panel input[type='range'] {
+  accent-color: var(--accent);
+}
+
+.ph-row {
+  display: flex;
+  gap: 6px;
+}
+
+.ph-row button {
+  flex: 1;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 7px 4px;
+  cursor: pointer;
+}
+
+.ph-row button:hover {
+  border-color: var(--accent);
+}
+
+.ph-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}

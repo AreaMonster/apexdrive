@@ -1,0 +1,630 @@
+/* Menu screens (ui/Menu.js) and the drift HUD panel. Colour variables come from styles.css. */
+
+#menu {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 5;
+}
+
+#menu.show {
+  display: block;
+}
+
+#menu.overlay {
+  background: rgba(6, 9, 14, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.menu {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px;
+  gap: 16px;
+  user-select: none;
+}
+
+.menu button {
+  font: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+}
+
+.menu button:hover:not([disabled]),
+.menu button:focus {
+  outline: none;
+  background: rgba(255, 176, 32, 0.16);
+  border-color: var(--accent);
+}
+
+.menu button[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.menu button.primary {
+  background: var(--accent);
+  color: #111;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.menu button.primary:focus,
+.menu button.primary:hover:not([disabled]) {
+  background: #ffc552;
+  color: #111;
+}
+
+.menu button.danger {
+  border-color: rgba(255, 77, 61, 0.6);
+  color: #ff8a7e;
+}
+
+.menu h1 {
+  margin: 0;
+  font-size: 30px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.menu h2 {
+  margin: 2px 0 6px;
+  font-size: 26px;
+}
+
+.menu h3 {
+  margin: 14px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.menu h3 small {
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: 6px;
+}
+
+/* main menu */
+.menu-side {
+  width: min(340px, 100%);
+  height: calc(100% + 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 24px;
+  margin: -24px -28px;
+  background: linear-gradient(90deg, rgba(8, 11, 16, 0.92), rgba(8, 11, 16, 0.55) 80%, rgba(8, 11, 16, 0));
+}
+
+.menu-logo {
+  font-size: 40px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.menu-credits {
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.menu-credits.big {
+  font-size: 20px;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-list button {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 16px;
+}
+
+.menu-list button:focus,
+.menu-list button:hover {
+  transform: translateX(4px);
+}
+
+.menu-car-line {
+  margin-top: auto;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-car-line b {
+  color: var(--text);
+}
+
+.menu-car-line span {
+  font-size: 12px;
+}
+
+/* sub-screens */
+.menu-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-head > div:nth-child(2) {
+  flex: 1;
+}
+
+.menu-head p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.menu-head .menu-back {
+  font-size: 22px;
+  padding: 6px 14px;
+}
+
+.menu-cols {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 16px;
+}
+
+/* the gap between the panels leaves the showroom car visible */
+.menu-gap {
+  flex: 1;
+}
+
+.menu-panel {
+  width: min(400px, 100%);
+  overflow-y: auto;
+  background: rgba(10, 13, 18, 0.78);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.car-list,
+.map-list {
+  width: min(320px, 100%);
+}
+
+.car-item,
+.map-item,
+.champ-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.car-item em,
+.map-item em,
+.champ-item em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.map-item span,
+.champ-item span {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-item i,
+.champ-item i {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.champ-item {
+  flex-wrap: wrap;
+}
+
+.champ-item small {
+  width: 100%;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.champ-list {
+  width: min(560px, 100%);
+}
+
+.menu .car-item.sel,
+.menu .map-item.sel {
+  border-color: var(--accent);
+  background: rgba(255, 176, 32, 0.12);
+}
+
+.car-item.cur em {
+  color: #3ddc84;
+}
+
+.car-brand {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.car-desc {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 6px;
+}
+
+.car-tags {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.car-tags span {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 4px 0 8px;
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: 82px 1fr 74px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.stat span {
+  color: var(--muted);
+}
+
+.stat b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat .bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.stat .bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ffb020, #ff6a3d);
+}
+
+.swatches {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.menu button.swatch {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.menu button.swatch.on {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.upg {
+  display: grid;
+  grid-template-columns: 1fr auto 104px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.upg b {
+  text-align: center;
+  color: #3ddc84;
+}
+
+.menu .upg button {
+  padding: 5px 8px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.pips {
+  display: flex;
+  gap: 4px;
+}
+
+.pips i {
+  width: 14px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pips i.on {
+  background: var(--accent);
+}
+
+.menu-actions {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-actions button {
+  font-size: 17px;
+  padding: 12px;
+}
+
+.menu button.opt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu button.opt span {
+  color: var(--muted);
+}
+
+.menu button.opt b {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.setup-detail .primary {
+  margin-top: 10px;
+}
+
+.events,
+.standings {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.events li,
+.standings li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.events li span {
+  color: var(--muted);
+}
+
+.events li.done {
+  opacity: 0.5;
+}
+
+.events li.next,
+.standings li.me {
+  background: rgba(255, 176, 32, 0.16);
+}
+
+.warn {
+  color: #ff8a7e;
+}
+
+/* pause / results */
+.menu-center {
+  margin: auto;
+  width: min(620px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  background: rgba(10, 13, 18, 0.88);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.menu-center > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.menu-center .menu-list button {
+  text-align: center;
+}
+
+.menu-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.menu-row button {
+  min-width: 160px;
+  text-align: center;
+}
+
+table.results {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+table.results th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 6px;
+}
+
+table.results td {
+  padding: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+table.results tr.me td {
+  background: rgba(255, 176, 32, 0.16);
+  font-weight: 700;
+}
+
+dl.summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 16px;
+  margin: 4px 0;
+  text-align: left;
+}
+
+dl.summary dt {
+  color: var(--muted);
+}
+
+dl.summary dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.earned {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+.menu-toast {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* drift panel in the HUD */
+.hud-drift {
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  min-width: 200px;
+}
+
+.hud-drift-score {
+  font-size: 30px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-drift-chain {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-drift-chain.live {
+  color: #ffd25a;
+}
+
+.hud-drift-chain b {
+  color: var(--accent);
+}
+
+.hud-drift-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .menu {
+    padding: 14px;
+    overflow-y: auto;
+  }
+  .menu-cols {
+    flex-direction: column;
+  }
+  .menu-gap {
+    min-height: 180px;
+  }
+  .menu-panel,
+  .car-list,
+  .map-list {
+    width: 100%;
+    overflow: visible;
+  }
+  .menu-side {
+    margin: -14px;
+    height: calc(100% + 28px);
+  }
+}
+
+/* results over the session replay: panel to the side, the replay shows through */
+#menu.replay-bg {
+  background: linear-gradient(90deg, rgba(6, 9, 14, 0.55), rgba(6, 9, 14, 0) 70%);
+}
+
+#menu.replay-bg .results-box {
+  margin: auto auto auto 0;
+  width: min(580px, 100%);
+  background: rgba(10, 13, 18, 0.8);
+}
+
+.opt b i {
+  font-style: normal;
+  padding: 0 4px;
+}

@@ -1,0 +1,56 @@
+import { roundedLoop, containerRing } from './shapes.js';
+
+// Airport / industrial drift arena: a painted course on open concrete, walled in by containers.
+export default {
+  id: 'airport_drift',
+  name: 'Dock 9 Drift Yard',
+  type: 'circuit',
+  description: 'A 1.2 km drift course painted on an old airfield apron, ringed by shipping containers and hangars.',
+  laps: 3,
+  track: {
+    width: 18,
+    bankGain: 0,
+    runoff: 4,
+    kerbs: false,
+    barrier: 'none',
+    lines: 'edge',
+    points: roundedLoop(
+      [
+        [0, 150],
+        [0, -100],
+        [80, -180],
+        [200, -180],
+        [260, -100],
+        [200, -20],
+        [300, 40],
+        [300, 160],
+        [180, 220],
+        [60, 220],
+      ],
+      30,
+    ),
+  },
+  grid: { slots: 8, spacing: 9, firstBack: 14 },
+  ground: { type: 'flat', surface: 'asphalt', texture: 'concrete', color: 0x9a9a96, tile: 8, size: 2400, center: [150, 20], margin: 260 },
+  landmarks: [
+    { type: 'plane', at: 0.5, side: -1, offset: 70, yaw: 0.4 },
+    { type: 'plane', at: 0.05, side: 1, offset: 95, yaw: -0.3 },
+    { type: 'radiomast', at: 0.3, side: 1, offset: 220 },
+  ],
+  scenery: { cones: { spacing: 8, minCurvature: 1 / 70 } },
+  props: [
+    ...containerRing(-90, 400, -270, 320, 2),
+    { type: 'hangar', x: 40, z: -360, yaw: 0, w: 70, d: 44, h: 16 },
+    { type: 'hangar', x: 170, z: -360, yaw: 0, w: 70, d: 44, h: 16 },
+    { type: 'hangar', x: 300, z: -360, yaw: 0, w: 70, d: 44, h: 16 },
+    { type: 'tower', x: 500, z: -220 },
+    { type: 'mast', x: -60, z: -240 },
+    { type: 'mast', x: 370, z: -240 },
+    { type: 'mast', x: -60, z: 290 },
+    { type: 'mast', x: 370, z: 290 },
+    { type: 'mast', x: 150, z: 30 },
+  ],
+  horizon: { near: 0x6f7a6a, far: 0x9aa4b0, height: 0.5 },
+  maxOffTrack: 160,
+  environment: { time: 18.15, azimuth: 200, maxElevation: 55, weather: 'clear', fog: { near: 300, far: 2200 } },
+};
